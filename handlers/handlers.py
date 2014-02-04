@@ -6,7 +6,6 @@ import os
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import run_wsgi_app
-from lib import audioscrobbler
 
 from models.user import User
 
@@ -63,11 +62,10 @@ class UsersHandler(BaseHandler):
                                 user=user,
                                 error='Please confirm you want to delete yourself!')
             else:
-                if self.request.get('password'):
-                    user.password = md5_string(self.request.get('password'))
-                user.rss_url = self.request.get('rss_url')
-                user.put()
-                self.render('user', user=user, success='Your info was updated!')
+              user.password = md5_string(self.request.get('password'))
+              user.rss_url = self.request.get('rss_url')
+              user.put()
+              self.render('user', user=user, success='Your info was updated!')
         # just signed up
         elif user.password == md5_string(self.request.get('password')):
             self.render('user', user=user)
@@ -75,35 +73,17 @@ class UsersHandler(BaseHandler):
             self.error(500)
             self.render('frontpage', error="Username/password not recognized!")
 
-class LoginCheckHandler(BaseHandler):
-    '''Used by AJAX-y requests to check the validity of lastfm credentials.
+class SubmitHandler(BaseHandler):
+    '''This is meant to be used in an AJAX action to indicate a correct
+    username/password, but is unimplemented. Sigh
     '''
-
-    def get(self):
-        self.response.headers['Content-Type'] = 'application/json'
-
-        username = self.request.get('username')
-        password = self.request.get('password')
-        if not password:
-            user = User.get_by_key_name(username)
-            password = user.password
-        else:
-            password = hashlib.md5(password).hexdigest()
-
-        poster = audioscrobbler.AudioScrobblerPost(
-            username=username,
-            password=password,
-            password_is_md5=True)
-        try:
-            poster.auth()
-            # Login ok
-            self.response.out.write('{"isOk": true}')
-        except audioscrobbler.AudioScrobblerPostBadAuth:
-            self.response.out.write('{"isOk": false}')
+    def get(self, username):
+        # redirect to tick or error image.
+        pass
 
 application = webapp.WSGIApplication(
     [('/', FrontpageHandler),
-     ('/login_check', LoginCheckHandler),
+     ('/submit/(.+)', SubmitHandler),
      ('/users', UsersHandler)],
     debug=True)
 

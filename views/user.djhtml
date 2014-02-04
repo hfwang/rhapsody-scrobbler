@@ -3,28 +3,11 @@
 <html>
   <head>
     <title>Rhapsody Scrobbler</title>
-    <link rel="stylesheet" href="/static/stylesheets/blueprint/screen.css" type="text/css" media="screen, projection" />
-    <link rel="stylesheet" href="/static/stylesheets/blueprint/print.css" type="text/css" media="print" />
-    <!--[if lt IE 8]><link rel="stylesheet" href="/static/stylesheets/blueprint/ie.css" type="text/css" media="screen, projection" /><![endif]-->
-    <link rel="stylesheet" href="/static/stylesheets/blueprint/plugins/fancy-type/screen.css" type="text/css" media="screen, projection" />
-    <link rel="stylesheet" href="/static/stylesheets/blueprint/plugins/buttons/screen.css" type="text/css" media="screen, projection" />
-    <link rel="stylesheet" href="/static/stylesheets/style.css" type="text/css" media="screen, projection" />
-	    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-	    <script type="text/javascript">
-	$(function(){
-	  $('.signup input[name=password]').blur(function() {
-	    var $u = $('.signup input[name=username]');
-	    var $p = $('.signup input[name=password]');
-	    $p.removeClass('success error').addClass('loading');
-	    $.getJSON(
-	        '/login_check',
-	        {'username': $u.val(), 'password': $p.val()},
-	        function(data) {
-	          $p.addClass(data.isOk ? 'success' : 'error');
-	        });
-	  });
-	});
-	    </script>
+    <link rel="stylesheet" href="static/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="static/blueprint/print.css" type="text/css" media="print" />
+    <!--[if lt IE 8]><link rel="stylesheet" href="static/blueprint/ie.css" type="text/css" media="screen, projection" /><![endif]-->
+    <link rel="stylesheet" href="static/blueprint/plugins/fancy-type/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="static/blueprint/plugins/buttons/screen.css" type="text/css" media="screen, projection" />
   </head>
   <body>
     <div class="container">
@@ -68,7 +51,7 @@
     {% endif %}
 
       <h2>Update your info?</h2>
-      <form action="/users" method="post" class="signup">
+      <form action="/users" method="post">
         <input type="hidden" name="old_password" value="{{ user.password|escape }}" />
         <label>Last.fm username</label><br />
         <input type="text" name="username" value="{{ user.username|escape }}" class="text" readonly style="color: #999; border-color: #BBB"/>
@@ -82,7 +65,7 @@
         <input type="text" name="rss_url" value="{{ user.rss_url|escape }}" class="text" />
         <br /><br />
 
-        <button type="submit" class="positive"><img src="/static/images/user_go.png" height=16 width=16 /> Update</button>
+        <button type="submit" class="positive"><img src="/static/user_go.png" height=16 width=16 /> Update</button>
       </form>
       <br style="clear: both"/>
       <h2>Delete me forever!</h2>
@@ -95,7 +78,7 @@
           Yes, I am really sure.
         </label><br />
         <input type="hidden" name="delete" value="false" />
-        <button type="submit" class="negative"><img src="/static/images/exclamation.png" height=16 width=16 /> Delete me!</button>
+        <button type="submit" class="negative"><img src="/static/exclamation.png" height=16 width=16 /> Delete me!</button>
       </form>
     </div>
 
