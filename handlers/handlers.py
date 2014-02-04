@@ -10,6 +10,18 @@ from lib import audioscrobbler
 
 from models.user import User
 
+from google.appengine.ext import webapp
+
+class MockHTTPMethodMiddleware(object):
+  def __init__(self, app):
+    self.app = app
+
+  def __call__(self, environ, start_response):
+    method = webapp.Request(environ).get('_method')
+    if method:
+      environ['REQUEST_METHOD'] = method.upper()
+    return self.app(environ, start_response)
+
 class BaseHandler(webapp.RequestHandler):
     def render(self, filename, **template_values):
         """Renders the template, passing in the appropriate template values."""
@@ -32,6 +44,9 @@ class BaseHandler(webapp.RequestHandler):
 
         return result
 
+def md5_string(string):
+    return hashlib.md5(string).hexdigest()
+
 class FrontpageHandler(BaseHandler):
     def get(self):
         # display front page.
@@ -39,12 +54,10 @@ class FrontpageHandler(BaseHandler):
 
 class UsersHandler(BaseHandler):
     def get(self):
-        self.post()
+        username = self.request.get('username')
+        user = User.get_by_key_name(username)
 
     def post(self):
-        def md5_string(string):
-            return hashlib.md5(string).hexdigest()
-
         username = self.request.get('username')
         user = User.get_or_insert(
             username,
@@ -75,6 +88,10 @@ class UsersHandler(BaseHandler):
             self.error(500)
             self.render('frontpage', error="Username/password not recognized!")
 
+class LogoutHandler(BaseHandler):
+    def get(self):
+        self.logout()
+
 class LoginCheckHandler(BaseHandler):
     '''Used by AJAX-y requests to check the validity of lastfm credentials.
     '''
@@ -103,12 +120,14 @@ class LoginCheckHandler(BaseHandler):
 
 application = webapp.WSGIApplication(
     [('/', FrontpageHandler),
+     ('/users/(.+)', UsersHandler),
+     ('/logout', LogoutHandler),
      ('/login_check', LoginCheckHandler),
-     ('/users', UsersHandler)],
+     ],
     debug=True)
 
 def main():
-    run_wsgi_app(application)
+    run_wsgi_app(MockHTTPMethodMiddleware(application))
 
 if __name__ == '__main__':
     main()

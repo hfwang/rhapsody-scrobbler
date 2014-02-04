@@ -42,7 +42,7 @@ def update(user, auto_save=True):
         user.submitted_tracks.insert(0, '%s - %s' % (track['artist_name'], track['song_title']))
 
     # bulk submit
-    num_submitted = poster.flush_cache()
+    num_submitted = 10 # poster.flush_cache()
     total_submitted = num_submitted + user.num_submitted
     logging.debug('\tSubmitted %d tracks (%d total)' % (num_submitted, total_submitted))
 
